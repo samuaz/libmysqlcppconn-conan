@@ -1,34 +1,25 @@
-from conan import ConanFile, tools
-from conan.tools.scm import Git
-from conan.tools.cmake import CMakeToolchain, CMake, cmake_layout, CMakeDeps
+from conan import ConanFile
+from conan.tools.cmake import CMakeToolchain, CMake
 from conan.tools.files import get
 from conan.tools.scm import Version
 from conan.errors import ConanInvalidConfiguration
-from conan.tools.apple import is_apple_os
 from conan.tools.build import check_min_cppstd, cross_building, stdcpp_library
-from conan.tools.cmake import CMake, CMakeToolchain, CMakeDeps, cmake_layout
-from conan.tools.env import VirtualRunEnv, VirtualBuildEnv
-from conan.tools.files import rename, apply_conandata_patches, replace_in_file, rmdir, rm, export_conandata_patches, copy, mkdir
-from conan.tools.gnu import PkgConfigDeps
-from conan.tools.microsoft import is_msvc, is_msvc_static_runtime
-from conan.tools.scm import Version
 
-class mysql_connector_cxxRecipe(ConanFile):
-    name = "libmysqlcppconn"
+class MysqlConnectorCPPRecipe(ConanFile):
+    name = "mysql-connector-cpp"
     license = "GPL-2.0"
-    author = "Samuel Aazcona <samuel@gmail.com>"
-    url = "https://github.com/samuaz/libmysqlcppconn-conan"
+    url = "https://github.com/conan-io/conan-center-index"
     homepage = "https://dev.mysql.com/doc/connector-cpp/8.0"
     description = "A Conan package for MySQL Connector/C++ with OpenSSL, Boost, and libmysqlclient"
-    topics = ("conan", "mysql", "connector", "cpp", "openssl", "boost", "libmysqlclient", "jdbc", "static")
+    topics = ("mysql", "connector", "cpp", "openssl", "boost", "libmysqlclient", "jdbc", "static")
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {"shared": False, "fPIC": True}
-    requires = ("boost/1.81.0", "openssl/1.1.1t", "libmysqlclient/8.0.31")
+    requires = ("boost/1.81.0", "openssl/[>=1.1 <4]", "libmysqlclient/8.0.31")
 
     @property
     def _min_cppstd(self):
-        return "17" if Version(self.version) >= "8.0.27" else "11"
+        return "17"
 
     @property
     def _compilers_minimum_version(self):
@@ -40,11 +31,7 @@ class mysql_connector_cxxRecipe(ConanFile):
         }
 
     def source(self):
-        get(self, **self.conan_data["sources"][self.version], strip_root=True)
-
-    def layout(self):
-        file_name = "mysql-connector-c++"
-        cmake_layout(self, src_folder=f"{file_name}-{self.version}-src")
+        get(self, **self.conan_data["sources"][self.version], strip_root=True, destination=self.source_folder)
 
     def validate_build(self):
         if self.settings.compiler.get_safe("cppstd"):
@@ -91,7 +78,7 @@ class mysql_connector_cxxRecipe(ConanFile):
         tc.cache_variables["CMAKE_BUILD_TYPE"] = "Release"
         tc.cache_variables["WITH_JDBC"] = "ON"
         tc.cache_variables["WITHOUT_SERVER"] = "ON"
-        if self.options.shared == False:
+        if not self.options.shared:
             tc.cache_variables["BUILD_STATIC"] = "ON"
         tc.cache_variables["MYSQL_LIB_DIR"] = self.dependencies["libmysqlclient"].cpp_info.aggregated_components().libdirs[0].replace("\\", "/")
         tc.cache_variables["MYSQL_INCLUDE_DIR"] = self.dependencies["libmysqlclient"].cpp_info.aggregated_components().includedirs[0].replace("\\", "/")
@@ -108,15 +95,16 @@ class mysql_connector_cxxRecipe(ConanFile):
         cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = ["mysqlcppconn-static", "mysqlcppconn8-static"]
-        self.cpp_info.system_libs = ["resolv"]
         self.cpp_info.libdirs = ["lib","lib64"]
         self.cpp_info.includedirs = ["include"]
         if not self.options.shared:
+            self.cpp_info.libs = ["mysqlcppconn-static", "mysqlcppconn8-static"]
             stdcpplib = stdcpp_library(self)
             if stdcpplib:
                 self.cpp_info.system_libs.append(stdcpplib)
-            if self.settings.os in ["Linux", "FreeBSD"]:
+            if self.settings.os in ["Linux", "FreeBSD", "Macos"]:
                 self.cpp_info.system_libs.extend(["m", "resolv"])
-        self.cpp_info.names["cmake_find_package"] = "mysqlcppconn"
-        self.cpp_info.names["cmake_find_package_multi"] = "mysqlcppconn"
+        else:
+            self.cpp_info.libs = ["mysqlcppconn", "mysqlcppconn8"]
+        self.cpp_info.names["cmake_find_package"] = "mysql-connector-cpp"
+        self.cpp_info.names["cmake_find_package_multi"] = "mysql-connector-cpp"
