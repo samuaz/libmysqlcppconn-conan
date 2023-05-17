@@ -22,6 +22,7 @@ libxslt-dev
 
 RUN python3 -m pip install --upgrade pip
 RUN python3 -m pip install --upgrade pygobject
+RUN pip3 install conan -y
 
 RUN wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb \
 && dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb \
