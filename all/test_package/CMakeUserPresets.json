@@ -5,6 +5,7 @@
     },
     "include": [
         "/Users/samuaz/Projects/toc/mysql-connector-cxx-conan/test_package/build/apple-clang-14-armv8-gnu17-release/generators/CMakePresets.json",
-        "/Users/samuaz/Projects/toc/libmysqlcppconn-conan/all/test_package/build/apple-clang-14-armv8-gnu17-release/generators/CMakePresets.json"
+        "/Users/samuaz/Projects/toc/libmysqlcppconn-conan/all/test_package/build/apple-clang-14-armv8-gnu17-release/generators/CMakePresets.json",
+        "/Users/samuaz/Projects/conan-center-index/recipes/mysql-connector-cpp/all/test_package/build/apple-clang-14-armv8-gnu17-release/generators/CMakePresets.json"
     ]
 }

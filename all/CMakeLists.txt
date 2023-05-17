@@ -1,6 +1,0 @@
-cmake_minimum_required(VERSION 3.15)
-project(mysql-connector-cxx CXX)
-add_library(mysql-connector-cxx src/mysql-connector-cxx.cpp)
-target_include_directories(mysql-connector-cxx PUBLIC include)
-set_target_properties(mysql-connector-cxx PROPERTIES PUBLIC_HEADER "include/mysql-connector-cxx.h")
-install(TARGETS mysql-connector-cxx)

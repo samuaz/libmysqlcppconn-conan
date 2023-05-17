@@ -31,3 +31,4 @@
 *.out
 *.app
 Build/
+.DS_store
