@@ -6,8 +6,6 @@ RUN useradd -s /bin/bash -m vscode \
   && groupadd docker \
   && usermod -aG docker vscode
 
-ENV CONAN_CPU_COUNT=1
-
 RUN apt update -y \ 
 && apt install -y build-essential \
 cmake \
@@ -20,7 +18,8 @@ python3-pip \
 libcairo2-dev \ 
 libgirepository1.0-dev \ 
 libxml2-dev \ 
-libxslt-dev
+libxslt-dev \
+libresolv-wrapper 
 
 RUN python3 -m pip install --upgrade pip
 RUN python3 -m pip install --upgrade pygobject
